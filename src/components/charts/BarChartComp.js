@@ -1,18 +1,21 @@
 import React, { useState, useEffect } from "react";
 import { BarChart } from "@mui/x-charts";
 import { Card, CardContent, FormControl, InputLabel, Select, MenuItem, Stack } from '@mui/material';
-import { fetchData, filterDataByPeriod } from '../DataFetcher';
+import { fetchData } from '../DataFetcher';
 
 function BarChartComp({ onPeriodChange }) {
   const [period, setPeriod] = useState(7);
   const [chartData, setChartData] = useState({ xAxis: [], series: [] });
 
   useEffect(() => {
-    const initialData = fetchData();
-    const filteredData = filterDataByPeriod(initialData, period);
-    const newChartData = getChartData(filteredData);
-    setChartData(newChartData);
-    onPeriodChange(period);
+    const loadChartData = async () => {
+      const initialData = await fetchData(period);
+      const newChartData = getChartData(initialData);
+      setChartData(newChartData);
+      onPeriodChange(period);
+    };
+
+    loadChartData();
   }, [period]);
 
   const getChartData = (filteredData) => {
@@ -23,7 +26,7 @@ function BarChartComp({ onPeriodChange }) {
     return {
       xAxis,
       series: [
-        { id: "left-load-count", data: leftLoadCounts, label: "LEFT LOAD COUNT" },  //data bi array
+        { id: "left-load-count", data: leftLoadCounts, label: "LEFT LOAD COUNT" },
         { id: "right-load-count", data: rightLoadCounts, label: "RIGHT LOAD COUNT" },
       ],
     };
@@ -33,7 +36,6 @@ function BarChartComp({ onPeriodChange }) {
     setPeriod(event.target.value);
   };
 
-  console.log(chartData);
   return (
     <div>
       <Card sx={{ width: "100%" }}>

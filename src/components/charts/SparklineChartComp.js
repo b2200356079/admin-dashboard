@@ -3,22 +3,25 @@ import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 import { Card, CardContent, FormControl, InputLabel, Select, MenuItem, Typography } from "@mui/material";
-import { fetchData, filterDataByPeriod } from '../DataFetcher';
+import { fetchData } from '../DataFetcher';
 
 export default function LineChartComp() {
   const [period, setPeriod] = useState(7);
   const [chartData, setChartData] = useState([]);
 
   useEffect(() => {
-    const initialData = fetchData();
-    const filteredData = filterDataByPeriod(initialData, period);
-    const data = filteredData.map(item => ({
-      date: item.TARIH,
-      verifiedAlarm: item.VERIFIED_ALARM_COUNT,
-      enabledAlarm: item.ENABLED_ALARM_COUNT,
-      alarm: item.ALARM_COUNT,
-    }));
-    setChartData(data);
+    const loadChartData = async () => {
+      const initialData = await fetchData(period);
+      const data = initialData.map(item => ({
+        date: item.TARIH,
+        verifiedAlarm: item.VERIFIED_ALARM_COUNT,
+        enabledAlarm: item.ENABLED_ALARM_COUNT,
+        alarm: item.ALARM_COUNT,
+      }));
+      setChartData(data);
+    };
+
+    loadChartData();
   }, [period]);
 
   const handlePeriodChange = (event) => {

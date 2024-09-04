@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { PieChart } from "@mui/x-charts/PieChart";
 import { Card, CardContent, FormControl, InputLabel, Select, MenuItem, Stack, Box, Typography } from '@mui/material';
-import { fetchData, filterDataByPeriod } from '../DataFetcher';
+import { fetchData } from '../DataFetcher';
 
 export default function PieChartComp() {
   const [period, setPeriod] = useState(7);
@@ -9,15 +9,17 @@ export default function PieChartComp() {
   const [alarmCount, setAlarmCount] = useState(0);
 
   useEffect(() => {
-    const initialData = fetchData();
-    const filteredData = filterDataByPeriod(initialData, period);
-    const chartData = generatePieChartData(filteredData);
-    setData(chartData);
+    const loadChartData = async () => {
+      const initialData = await fetchData(period);
+      const chartData = generatePieChartData(initialData);
+      setData(chartData);
+    };
+
+    loadChartData();
   }, [period]);
 
   const generatePieChartData = (data) => {
     const typeCounts = [0, 0, 0, 0, 0, 0, 0];
-    console.log(data);
     data.forEach(item => {
       typeCounts[0] += item.TYPE_1_COUNT;
       typeCounts[1] += item.TYPE_2_COUNT;
@@ -29,7 +31,7 @@ export default function PieChartComp() {
     });
     const totalAlarmCount = typeCounts.reduce((a, b) => a + b, 0);
     setAlarmCount(totalAlarmCount);
-    return typeCounts.map((count, index) => ({  //obje: { id: 0, value: 5, label: 'Type 1' } bunlardan oluşan array döner. 
+    return typeCounts.map((count, index) => ({
       id: index,
       value: count,
       label: `Type ${index + 1}`,
@@ -77,7 +79,7 @@ export default function PieChartComp() {
               />
             </Box>
             <Typography variant="h6" sx={{ marginTop: 2, marginLeft: 2, textAlign: 'center' }}>
-              Total Alarm Count: <span style={{ marginLeft: '50px' , color : 'blue', fontWeight:'600'}}>{alarmCount}</span>
+              Total Alarm Count: <span style={{ marginLeft: '50px', color: 'blue', fontWeight: '600' }}>{alarmCount}</span>
             </Typography>
           </Stack>
         </CardContent>

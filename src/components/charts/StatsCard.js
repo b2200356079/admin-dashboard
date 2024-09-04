@@ -5,6 +5,7 @@ import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from 'dayjs';
 import { fetchData } from "../DataFetcher";
+import 'dayjs/locale/en-gb';
 
 export default function StatsCard() {
   const data = fetchData();
@@ -23,7 +24,7 @@ export default function StatsCard() {
   };
 
   return (
-    <LocalizationProvider dateAdapter={AdapterDayjs}>
+    <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="en-gb">
       <Grid container spacing={3}>
         {cards.map((card, index) => (
           <Grid item xs={12} sm={cards.length === 1 ? 12 : 6} md={cards.length > 2 ? 6 : 6} key={index}>
